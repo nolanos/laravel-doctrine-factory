@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\factories;
+namespace Nolanos\LaravelDoctrineFactory;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
