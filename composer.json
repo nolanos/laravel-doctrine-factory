@@ -1,0 +1,77 @@
+{
+  "name": "nolanos/laravel-doctrine-factory",
+  "description": "Generate Typescript definitions for your Eloquent models",
+  "type": "library",
+  "homepage": "https://github.com/nolanos/laravel-doctrine-factory",
+  "license": "MIT",
+  "keywords": [
+    "laravel",
+    "typescript",
+    "eloquent"
+  ],
+  "authors": [
+    {
+      "name": "Nolan Phillips",
+      "email": "hello@nolanphillips.com",
+      "role": "Developer",
+      "homepage": "https://nolanphillips.com"
+    }
+  ],
+  "support": {
+    "source": "https://github.com/nolanos/laravel-doctrine-factory",
+    "issues": "https://github.com/nolanos/laravel-doctrine-factory/issues"
+  },
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/ncphillips"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Nolanos\\LaravelDoctrineFactory\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/",
+      "Workbench\\App\\": "workbench/app/",
+      "Workbench\\Database\\Factories\\": "workbench/database/factories/",
+      "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
+    }
+  },
+  "scripts": {
+    "test": "@php vendor/bin/pest",
+    "post-autoload-dump": [
+      "@clear",
+      "@prepare"
+    ],
+    "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+    "prepare": "@php vendor/bin/testbench package:discover --ansi",
+    "build": "@php vendor/bin/testbench workbench:build --ansi",
+    "serve": [
+      "Composer\\Config::disableProcessTimeout",
+      "@build",
+      "@php vendor/bin/testbench serve --ansi"
+    ],
+    "lint": [
+      "@php vendor/bin/phpstan analyse --verbose --ansi"
+    ]
+  },
+  "require": {
+    "php": "^8.2",
+    "laravel-doctrine/orm": "^2.1",
+    "laravel/framework": "^9.0|^10.0|^11.0"
+  },
+  "require-dev": {
+    "mockery/mockery": "^1.6",
+    "orchestra/testbench": "^9.4",
+    "pestphp/pest": "^2.35"
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  }
+}
