@@ -10,6 +10,13 @@ use ReflectionClass;
 
 abstract class DoctrineFactory extends Factory
 {
+    /**
+     * Create a collection of entities and persist them to the database.
+     * 
+     * @param  (callable(array<string, mixed>): array<string, mixed>)|array<string, mixed>  $attributes
+     * @param  object|null  $parent
+     * @return \Illuminate\Database\Eloquent\Collection<int, object>|object
+     */
     public function create($attributes = [], ?Model $parent = null)
     {
         if (! empty($attributes)) {
@@ -35,7 +42,7 @@ abstract class DoctrineFactory extends Factory
      * Instantiates the Entity with the given attributes.
      *
      * @param array $attributes
-     * @return Model|object|string
+     * @return object|string
      * @throws \ReflectionException
      */
     public function newModel(array $attributes = [])
@@ -55,6 +62,12 @@ abstract class DoctrineFactory extends Factory
         return $instance;
     }
 
+    /**
+     * Store the given models in the database.
+     * 
+     * @param Illuminate\Support\Collection $results
+     * @return void
+     */
     public function store(Collection $results)
     {
 
@@ -64,5 +77,24 @@ abstract class DoctrineFactory extends Factory
 
         EntityManager::flush();
     }
+    
+    /**
+     * Define a parent relationship for the entity.
+     * 
+     * TODO: Accept a Factory as well as a ready made Entity
+     * 
+     * @param object $entity A Doctrine entity
+     * @param string|null $relationship The relationship name to use. Defaults to the entity name in camelCase.
+     * @return static
+     */
+    public function for($entity, $relationship = null)
+    {
+        return $this->state(function (array $attributes) use ($entity, $relationship) {
+            $relationship = $relationship ?? lcfirst(class_basename($entity));
 
+            return [
+                $relationship => $entity,
+            ];
+        });
+    }
 }
