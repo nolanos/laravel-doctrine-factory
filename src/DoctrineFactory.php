@@ -8,18 +8,24 @@ use Illuminate\Support\Collection;
 use LaravelDoctrine\ORM\Facades\EntityManager;
 use ReflectionClass;
 
+
+/**
+ * @template TModel
+ *
+ * @method $this trashed()
+ */
 abstract class DoctrineFactory extends Factory
 {
     /**
-     * Create a collection of entities and persist them to the database.
-     * 
+     * Create a collection of models and persist them to the database.
+     *
      * @param  (callable(array<string, mixed>): array<string, mixed>)|array<string, mixed>  $attributes
-     * @param  object|null  $parent
-     * @return \Illuminate\Database\Eloquent\Collection<int, object>|object
+     * @param  \Object|null  $parent
+     * @return \Illuminate\Database\Eloquent\Collection<int, TModel>|TModel
      */
     public function create($attributes = [], ?Model $parent = null)
     {
-        if (! empty($attributes)) {
+        if (!empty($attributes)) {
             return $this->state($attributes)->create([], $parent);
         }
 
@@ -39,11 +45,48 @@ abstract class DoctrineFactory extends Factory
     }
 
     /**
-     * Instantiates the Entity with the given attributes.
+     * Create a collection of models.
      *
-     * @param array $attributes
-     * @return object|string
-     * @throws \ReflectionException
+     * @param  (callable(array<string, mixed>): array<string, mixed>)|array<string, mixed>  $attributes
+     * @param  \Illuminate\Database\Eloquent\Model|null  $parent
+     * @return \Illuminate\Database\Eloquent\Collection<int, TModel>|TModel
+     */
+    public function make($attributes = [], ?Model $parent = null)
+    {
+        if (! empty($attributes)) {
+            return $this->state($attributes)->make([], $parent);
+        }
+
+        if ($this->count === null) {
+            return tap($this->makeInstance($parent), function ($instance) {
+                $this->callAfterMaking(collect([$instance]));
+            });
+        }
+
+        if ($this->count < 1) {
+            /**
+             * @modified Directly calls `collect` instead of doing $this->newModel()->newCollection()
+             */
+            return collect(); // Re
+        }
+
+        /**
+         * @modified Directly calls `collect` instead of doing $this->newModel()->newCollection()
+         */
+        $instances = collect(array_map(function () use ($parent) {
+            return $this->makeInstance($parent);
+        }, range(1, $this->count)));
+
+        $this->callAfterMaking($instances);
+
+        return $instances;
+    }
+
+    /**
+     * Get a new model instance.
+     *
+     * @param  array<string, mixed>  $attributes
+     * @return TModel
      */
     public function newModel(array $attributes = [])
     {
@@ -52,9 +95,7 @@ abstract class DoctrineFactory extends Factory
         $instance = $reflectionClass->newInstanceWithoutConstructor();
 
         foreach ($attributes as $attribute => $value) {
-
             $reflectionProperty = $reflectionClass->getProperty($attribute);
-            // Make private/protected properties accessible
             $reflectionProperty->setAccessible(true);
             $reflectionProperty->setValue($instance, $value);
         }
@@ -62,13 +103,14 @@ abstract class DoctrineFactory extends Factory
         return $instance;
     }
 
+
     /**
-     * Store the given models in the database.
-     * 
-     * @param Illuminate\Support\Collection $results
+     * Set the connection name on the results and store them.
+     *
+     * @param  \Illuminate\Support\Collection<int, TModel>  $results
      * @return void
      */
-    public function store(Collection $results)
+    protected function store(Collection $results)
     {
         $results->each(function ($model) {
             EntityManager::persist($model);
@@ -76,12 +118,12 @@ abstract class DoctrineFactory extends Factory
 
         EntityManager::flush();
     }
-    
+
     /**
      * Define a parent relationship for the entity.
-     * 
+     *
      * TODO: Accept a Factory as well as a ready made Entity
-     * 
+     *
      * @param object $entity A Doctrine entity
      * @param string|null $relationship The relationship name to use. Defaults to the entity name in camelCase.
      * @return static

@@ -14,7 +14,7 @@ use Workbench\App\Entities\User;
  *
  * @see https://laravel.com/docs/11.x/eloquent-factories#instantiating-models
  */
-describe('Instantiating Entitites', function () {
+describe('Instantiating Entities', function () {
     test("make", function () {
         $entity = User::factory()->make();
 
@@ -44,5 +44,5 @@ describe('Instantiating Entitites', function () {
         expect($users)
             ->toHaveCount(3)
             ->toBeInstanceOf(Collection::class);
-    })->todo(issue: 1);
+    });
 });

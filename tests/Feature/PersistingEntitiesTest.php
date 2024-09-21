@@ -42,5 +42,5 @@ describe('Persisting Entities', function () {
         expect($users)
             ->toHaveCount(3)
             ->toBeInstanceOf(Collection::class);
-    })->todo(issue: 2);
+    });
 });
