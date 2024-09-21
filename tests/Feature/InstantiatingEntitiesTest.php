@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-
 use Illuminate\Support\Collection;
 use LaravelDoctrine\ORM\Facades\EntityManager;
 use Workbench\App\Entities\User;

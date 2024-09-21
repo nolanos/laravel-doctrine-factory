@@ -3,8 +3,6 @@
 namespace Tests\Feature;
 
 use Illuminate\Database\Eloquent\Factories\Sequence;
-use Illuminate\Support\Collection;
-use LaravelDoctrine\ORM\Facades\EntityManager;
 use Nolanos\LaravelDoctrineFactory\DoctrineFactory;
 use Workbench\App\Entities\User;
 
