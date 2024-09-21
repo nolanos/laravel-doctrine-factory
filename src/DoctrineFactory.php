@@ -49,7 +49,7 @@ abstract class DoctrineFactory extends Factory
      *
      * @param  (callable(array<string, mixed>): array<string, mixed>)|array<string, mixed>  $attributes
      * @param  \Illuminate\Database\Eloquent\Model|null  $parent
-     * @return \Illuminate\Database\Eloquent\Collection<int, TModel>|TModel
+     * @return \Illuminate\Support\Collection<int, TModel>|TModel
      */
     public function make($attributes = [], ?Model $parent = null)
     {
@@ -124,17 +124,17 @@ abstract class DoctrineFactory extends Factory
      *
      * TODO: Accept a Factory as well as a ready made Entity
      *
-     * @param object $entity A Doctrine entity
+     * @param object $factory A Doctrine entity
      * @param string|null $relationship The relationship name to use. Defaults to the entity name in camelCase.
      * @return static
      */
-    public function for($entity, $relationship = null)
+    public function for($factory, $relationship = null)
     {
-        return $this->state(function (array $attributes) use ($entity, $relationship) {
-            $relationship = $relationship ?? lcfirst(class_basename($entity));
+        return $this->state(function (array $attributes) use ($factory, $relationship) {
+            $relationship = $relationship ?? lcfirst(class_basename($factory));
 
             return [
-                $relationship => $entity,
+                $relationship => $factory,
             ];
         });
     }
