@@ -18,6 +18,12 @@ usual `Illuminate\Database\Eloquent\Factories\Factory`.
 `DoctrineFactory` subclasses the default `Factory` to override how it instantiates and
 saves the objects. Everything else works exactly the same.
 
+## Design Philosophy
+
+The goal of this package is to provide a drop-in replacement for Laravel's default
+factories that works with Doctrine entities. It should mirror the existing API
+so closely that you could read the Laravel documentation and use this package.s
+
 # Development
 
 ### Setup
