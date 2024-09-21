@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 
 use Illuminate\Support\Collection;
+use LaravelDoctrine\ORM\Facades\EntityManager;
 use Workbench\App\Entities\User;
 
 /**
@@ -17,7 +18,8 @@ describe('Instantiating Entitites', function () {
     test("make", function () {
         $entity = User::factory()->make();
 
-        expect($entity)->toBeInstanceOf(User::class);
+        expect($entity)->toBeInstanceOf(User::class)
+            ->and(EntityManager::contains($entity))->toBeFalse();
     });
 
     test("overriding attributes", function () {
