@@ -70,7 +70,6 @@ abstract class DoctrineFactory extends Factory
      */
     public function store(Collection $results)
     {
-
         $results->each(function ($model) {
             EntityManager::persist($model);
         });

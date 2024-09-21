@@ -4,7 +4,13 @@ namespace Tests\Feature;
 
 use Illuminate\Support\Collection;
 use LaravelDoctrine\ORM\Facades\EntityManager;
+use Nolanos\LaravelDoctrineFactory\DoctrineFactory;
 use Workbench\App\Entities\User;
+
+/**
+ * Covers
+ */
+covers(DoctrineFactory::class);
 
 /**
  * ---------------------------------------------------------------------------------
@@ -17,11 +23,12 @@ describe('Persisting Entities', function () {
     test("create", function () {
         $entity = User::factory()->create();
 
-        expect($entity)->toBeInstanceOf(User::class)
-            ->and(EntityManager::contains($entity))->toBeTrue();
+        expect($entity)->toBeInstanceOf(User::class);
+
+        EntityManager::refresh($entity);
     });
 
-    test("overriding attributes", function() {
+    test("overriding attributes", function () {
         $name = 'Billy the Kid';
 
         $entity = User::factory()->create(['name' => $name]);
@@ -30,7 +37,7 @@ describe('Persisting Entities', function () {
     });
 
     test("create multiple", function () {
-        $users = User::factory()->count(3)->make();
+        $users = User::factory()->count(3)->create();
 
         expect($users)
             ->toHaveCount(3)
