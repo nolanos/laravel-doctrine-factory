@@ -20,6 +20,9 @@ class User
     #[Column(type: 'string')]
     protected $name;
 
+    #[Column(type: 'boolean')]
+    protected bool $admin = false;
+
     public function getName(): string
     {
         return $this->name;
@@ -28,5 +31,10 @@ class User
     public function setName(string $name): void
     {
         $this->name = $name;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->admin;
     }
 }
