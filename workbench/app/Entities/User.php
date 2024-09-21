@@ -2,6 +2,8 @@
 
 namespace Workbench\App\Entities;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -23,6 +25,16 @@ class User
     #[Column(type: 'boolean')]
     protected bool $admin = false;
 
+    protected Collection $posts;
+
+    /**
+     * @param $id
+     */
+    public function __construct()
+    {
+        $this->posts = new ArrayCollection();
+    }
+
     public function getName(): string
     {
         return $this->name;
@@ -36,5 +48,10 @@ class User
     public function isAdmin(): bool
     {
         return $this->admin;
+    }
+
+    public function getPosts(): Collection
+    {
+        return $this->posts;
     }
 }

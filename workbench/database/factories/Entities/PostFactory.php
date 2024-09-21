@@ -2,20 +2,19 @@
 
 namespace Workbench\Database\Factories\Entities;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Nolanos\LaravelDoctrineFactory\DoctrineFactory;
 
 use Workbench\App\Entities\User;
 
-class UserFactory extends DoctrineFactory
+class PostFactory extends DoctrineFactory
 {
     protected $model = User::class;
 
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
-            'posts' => new ArrayCollection(),
+            'title' => fake()->name(),
+            'published' => fake()->boolean(),
         ];
     }
 }
