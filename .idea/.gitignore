@@ -6,3 +6,5 @@
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+/commandlinetools/schemas/frameworkDescriptionVersion1.1.4.xsd
+/commandlinetools/Laravel_2024_09_22__7_34_p_m_.xml

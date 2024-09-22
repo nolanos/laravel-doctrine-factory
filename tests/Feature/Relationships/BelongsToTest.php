@@ -3,7 +3,6 @@
 
 namespace Tests\Feature\Relationships;
 
-use LaravelDoctrine\ORM\Facades\EntityManager;
 use Nolanos\LaravelDoctrineFactory\DoctrineFactory;
 use Workbench\App\Entities\Post;
 use Workbench\App\Entities\User;
@@ -28,4 +27,21 @@ describe('BelongsTo Relationships', function () {
 
         expect($post->getUser())->toBeInstanceOf(User::class);
     });
-})->todo();
+
+    test("pass state to parent", function () {
+        $post = Post::factory()
+            ->for(User::factory()->state(['name' => 'John Doe']))
+            ->make();
+
+        expect($post->getUser()->getName())->toBe('John Doe');
+    });
+
+    test("pass existing parent", function () {
+        $user = User::factory()->create();
+        $post = Post::factory()
+            ->for($user)
+            ->make();
+
+        expect($post->getUser())->toBe($user);
+    });
+});
