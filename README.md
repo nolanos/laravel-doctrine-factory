@@ -20,9 +20,18 @@ saves the objects. Everything else works exactly the same.
 
 ## Design Philosophy
 
+### No Documentation Necessary
+
 The goal of this package is to provide a drop-in replacement for Laravel's default
 factories that works with Doctrine entities. It should mirror the existing API
-so closely that you could read the Laravel documentation and use this package.s
+so closely that you could read the Laravel documentation and use this package without
+any additional documentation (beyond setup).
+
+### Explained Overrides 
+
+Quite a few methods are overridden by this package to make Factories work with Doctrine entities.
+The doc blocks of all overridden methods will be explained next to the `@override` tag.
+
 
 # Development
 
