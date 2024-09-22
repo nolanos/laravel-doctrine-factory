@@ -25,14 +25,14 @@ class Post
     protected bool $published = false;
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'posts')]
-    protected User $user;
+    protected ?User $user = null;
 
     public function getId(): int
     {
         return $this->id;
     }
 
-    public function getUser(): User {
+    public function getUser(): ?User {
         return $this->user;
     }
 }

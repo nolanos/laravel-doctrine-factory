@@ -158,4 +158,29 @@ abstract class DoctrineFactory extends Factory
         ))
         )])]);
     }
+
+    /**
+     * Proxy dynamic factory methods onto their proper methods.
+     *
+     * @override To handle the `for` method for Doctrine entities. Assumes that the factory
+     * is nested within the Entities namespace.
+     *
+     * @param string $method
+     * @param array $parameters
+     * @return mixed
+     */
+    public function __call($method, $parameters)
+    {
+        if (Str::startsWith($method, 'for')) {
+            $relationship = Str::camel(Str::after($method, 'for'));
+
+            $factoryName = static::$namespace. 'Entities\\'. Str::studly($relationship) . 'Factory';
+
+            $factory = new $factoryName;
+
+            return $this->for($factory->state($parameters[0] ?? []), $relationship);
+        }
+
+        return parent::__call($method, $parameters);
+    }
 }

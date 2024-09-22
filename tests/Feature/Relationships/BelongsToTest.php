@@ -20,7 +20,7 @@ covers(DoctrineFactory::class);
  * @see https://laravel.com/docs/11.x/eloquent-factories#belongs-to-relationships
  */
 describe('BelongsTo Relationships', function () {
-    test("create with parent", function () {
+    test("make with parent", function () {
         $post = Post::factory()
             ->for(User::factory())
             ->make();
@@ -44,4 +44,15 @@ describe('BelongsTo Relationships', function () {
 
         expect($post->getUser())->toBe($user);
     });
+
+    /**
+     * @see https://laravel.com/docs/11.x/eloquent-factories#belongs-to-relationships-using-magic-methods
+     */
+    test("create with parent using magic methods", function () {
+        $post = Post::factory()
+            ->forUser()
+            ->make();
+
+        expect($post->getUser())->toBeInstanceOf(User::class);
+    })->done(issue: 5);
 });
