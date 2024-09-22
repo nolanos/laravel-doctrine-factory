@@ -27,6 +27,9 @@ class Post
     #[ManyToOne(targetEntity: User::class, inversedBy: 'posts')]
     protected ?User $user = null;
 
+    #[ManyToOne(targetEntity: User::class)]
+    protected ?User $secondaryAuthor = null;
+
     public function getId(): int
     {
         return $this->id;
@@ -34,5 +37,9 @@ class Post
 
     public function getUser(): ?User {
         return $this->user;
+    }
+
+    public function getSecondaryAuthor(): ?User {
+        return $this->secondaryAuthor;
     }
 }

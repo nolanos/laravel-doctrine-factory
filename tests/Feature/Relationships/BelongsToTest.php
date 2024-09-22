@@ -28,6 +28,18 @@ describe('BelongsTo Relationships', function () {
         expect($post->getUser())->toBeInstanceOf(User::class);
     });
 
+    test("make with parent with a different relationship name", function () {
+        $author = User::factory()->create();
+        $secondaryAuthor = User::factory()->create();
+
+        $post = Post::factory()
+            ->for($author)
+            ->for($secondaryAuthor, 'secondaryAuthor')
+            ->make();
+
+        expect($post->getSecondaryAuthor())->toEqual($secondaryAuthor);
+    });
+
     test("pass state to parent", function () {
         $post = Post::factory()
             ->for(User::factory()->state(['name' => 'John Doe']))
