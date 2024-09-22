@@ -4,11 +4,11 @@ namespace Workbench\Database\Factories\Entities;
 
 use Nolanos\LaravelDoctrineFactory\DoctrineFactory;
 
-use Workbench\App\Entities\User;
+use Workbench\App\Entities\Post;
 
 class PostFactory extends DoctrineFactory
 {
-    protected $model = User::class;
+    protected $model = Post::class;
 
     public function definition(): array
     {
