@@ -3,24 +3,23 @@
 
 namespace Tests\Feature\Relationships;
 
+use Nolanos\LaravelDoctrineFactory\DoctrineBelongsToRelationship;
 use Nolanos\LaravelDoctrineFactory\DoctrineFactory;
 use Workbench\App\Entities\Post;
 use Workbench\App\Entities\User;
 
-/**
- * Covers
- */
-covers(DoctrineFactory::class);
-
-/**
- * ---------------------------------------------------------------------------------
- * BelongsTo Relationships
- * ---------------------------------------------------------------------------------
- *
- * @see https://laravel.com/docs/11.x/eloquent-factories#belongs-to-relationships
- */
 describe('BelongsTo Relationships', function () {
-    test("make with parent", function () {
+    test("the parent can be an instance", function () {
+        $user = User::factory()->create();
+
+        $post = Post::factory()
+            ->for($user)
+            ->make();
+
+        expect($post->getUser())->toBe($user);
+    });
+
+    test("the parent can be a factory", function () {
         $post = Post::factory()
             ->for(User::factory())
             ->make();
@@ -28,7 +27,15 @@ describe('BelongsTo Relationships', function () {
         expect($post->getUser())->toBeInstanceOf(User::class);
     });
 
-    test("make with parent with a different relationship name", function () {
+    test("the parent factory's state can be changed", function () {
+        $post = Post::factory()
+            ->for(User::factory()->state(['name' => 'John Doe']))
+            ->make();
+
+        expect($post->getUser()->getName())->toBe('John Doe');
+    });
+
+    test("the relationship name can be specified", function () {
         $author = User::factory()->create();
         $secondaryAuthor = User::factory()->create();
 
@@ -37,34 +44,19 @@ describe('BelongsTo Relationships', function () {
             ->for($secondaryAuthor, 'secondaryAuthor')
             ->make();
 
-        expect($post->getSecondaryAuthor())->toEqual($secondaryAuthor);
+        expect($post->getUser())->toEqual($author)
+            ->and($post->getSecondaryAuthor())->toEqual($secondaryAuthor);
     });
 
-    test("pass state to parent", function () {
-        $post = Post::factory()
-            ->for(User::factory()->state(['name' => 'John Doe']))
-            ->make();
-
-        expect($post->getUser()->getName())->toBe('John Doe');
-    });
-
-    test("pass existing parent", function () {
-        $user = User::factory()->create();
-        $post = Post::factory()
-            ->for($user)
-            ->make();
-
-        expect($post->getUser())->toBe($user);
-    });
-
-    /**
-     * @see https://laravel.com/docs/11.x/eloquent-factories#belongs-to-relationships-using-magic-methods
-     */
-    test("create with parent using magic methods", function () {
+    test("magic methods can infer the relationship", function () {
         $post = Post::factory()
             ->forUser()
             ->make();
 
         expect($post->getUser())->toBeInstanceOf(User::class);
-    })->done(issue: 5);
-});
+    })->note('https://laravel.com/docs/11.x/eloquent-factories#belongs-to-relationships-using-magic-methods')
+        ->done(issue: 5);
+
+})->note(note: 'https://laravel.com/docs/11.x/eloquent-factories#belongs-to-relationships')
+    ->covers(DoctrineFactory::class, DoctrineBelongsToRelationship::class)
+    ->done(issue: 10);
