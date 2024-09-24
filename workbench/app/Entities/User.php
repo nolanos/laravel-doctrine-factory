@@ -30,8 +30,9 @@ class User
     /**
      * @param $id
      */
-    public function __construct()
+    public function __construct(string $name)
     {
+        $this->name = $name;
         $this->posts = new ArrayCollection();
     }
 

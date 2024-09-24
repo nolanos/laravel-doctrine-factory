@@ -106,8 +106,21 @@ abstract class DoctrineFactory extends Factory
     {
         $reflectionClass = new ReflectionClass($this->modelName());
 
-        $instance = $reflectionClass->newInstanceWithoutConstructor();
+        // Initialize object using the constructor
+        $constructorArgs = [];
 
+        if ($constructor = $reflectionClass->getConstructor()) {
+            foreach ($constructor->getParameters() as $param) {
+                if (isset($attributes[$param->getName()])) {
+                    $constructorArgs[$param->getName()] = $attributes[$param->getName()];
+                    unset($attributes[$param->getName()]);
+                }
+            }
+        }
+
+        $instance = $reflectionClass->newInstanceArgs($constructorArgs);
+
+        // Update every non-constructor attribute directly
         foreach ($attributes as $attribute => $value) {
             if ($reflectionClass->hasProperty($attribute)) {
                 $reflectionProperty = $reflectionClass->getProperty($attribute);
@@ -118,7 +131,6 @@ abstract class DoctrineFactory extends Factory
 
         return $instance;
     }
-
 
     /**
      * Set the connection name on the results and store them.
@@ -174,7 +186,7 @@ abstract class DoctrineFactory extends Factory
         if (Str::startsWith($method, 'for')) {
             $relationship = Str::camel(Str::after($method, 'for'));
 
-            $factoryName = static::$namespace. 'Entities\\'. Str::studly($relationship) . 'Factory';
+            $factoryName = static::$namespace . 'Entities\\' . Str::studly($relationship) . 'Factory';
 
             $factory = new $factoryName;
 

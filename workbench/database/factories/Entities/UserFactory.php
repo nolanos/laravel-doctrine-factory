@@ -15,7 +15,7 @@ class UserFactory extends DoctrineFactory
     {
         return [
             'name' => fake()->name(),
-            'posts' => new ArrayCollection(),
+            'isAdmin' => false,
         ];
     }
 }
