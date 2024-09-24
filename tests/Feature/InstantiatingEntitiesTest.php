@@ -139,4 +139,36 @@ describe('Instantiating Entities', function () {
         expect(ConstructorlessFactory::new()->make(['name' => 'George']))
             ->getName()->toBe('George');
     });
+
+    test("supports null constructor attributes", function () {
+        class NullName
+        {
+            private string|null $name;
+
+            public function __construct(?string $name)
+            {
+                $this->name = $name;
+            }
+
+            public function getName(): ?string
+            {
+                return $this->name;
+            }
+        }
+
+        class NullNameFactory extends DoctrineFactory
+        {
+            protected $model = NullName::class;
+
+            public function definition(): array
+            {
+                return ['name' => null];
+            }
+        }
+
+        // Constructor is called with name from $attributes so that
+        // the name is modified and set through the constructor.
+        expect(NullNameFactory::new()->make())
+            ->getName()->toBeNull();
+    });
 });

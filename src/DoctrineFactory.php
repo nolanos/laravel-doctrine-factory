@@ -4,6 +4,7 @@ namespace Nolanos\LaravelDoctrineFactory;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use LaravelDoctrine\ORM\Facades\EntityManager;
@@ -111,7 +112,7 @@ abstract class DoctrineFactory extends Factory
 
         if ($constructor = $reflectionClass->getConstructor()) {
             foreach ($constructor->getParameters() as $param) {
-                if (isset($attributes[$param->getName()])) {
+                if (array_key_exists($param->getName(), $attributes)) {
                     $constructorArgs[$param->getName()] = $attributes[$param->getName()];
                     unset($attributes[$param->getName()]);
                 }
