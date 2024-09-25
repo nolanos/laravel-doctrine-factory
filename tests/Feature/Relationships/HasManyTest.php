@@ -60,32 +60,32 @@ describe('HasMany Relationships', function () {
         });
     });
 
-    test("magic methods", function () {
-        /** @var User $user */
-        $user = User::factory()
-            ->hasPosts(5)
-            ->create();
+    describe("magic methods", function () {
+        test("with count only", function () {
+            /** @var User $user */
+            $user = User::factory()
+                ->hasPosts(5)
+                ->create();
 
-        expect($user->getPosts())->toHaveCount(5);
+            expect($user->getPosts())->toHaveCount(5);
 
-        $user->getPosts()->map(function ($post) use ($user) {
-            expect($post)->getUser()->toBe($user);
+            $user->getPosts()->map(function ($post) use ($user) {
+                expect($post)->getUser()->toBe($user);
+            });
         });
-    });
 
-    test("magic methods with attributes", function () {
-        $title = 'The Count of Monte Cristo';
-        /** @var User $user */
-        $user = User::factory()
-            ->hasPosts(1, [
-                'title' => $title,
-            ])
-            ->create();
+        test("with attributes only", function () {
+            $title = 'The Count of Monte Cristo';
+            /** @var User $user */
+            $user = User::factory()
+                ->hasPosts(1, ['title' => $title])
+                ->create();
 
-        expect($user->getPosts())->toHaveCount(1);
+            expect($user->getPosts())->toHaveCount(1);
 
-        $user->getPosts()->map(function ($post) use ($title, $user) {
-            expect($post)->getTitle()->toBe($title);
+            $user->getPosts()->map(function ($post) use ($title, $user) {
+                expect($post)->getTitle()->toBe($title);
+            });
         });
-    });
-})->done(issue: 3);
+    })->note("https//laravel.com/docs/11.x/eloquent-factories#has-many-relationships-using-magic-methods");
+})->done(issue: 3)->note('https://laravel.com/docs/11.x/eloquent-factories#has-many-relationships');
