@@ -3,8 +3,6 @@
 
 namespace Tests\Feature\Relationships;
 
-use Illuminate\Support\Collection;
-use LaravelDoctrine\ORM\Facades\EntityManager;
 use Nolanos\LaravelDoctrineFactory\DoctrineFactory;
 use Workbench\App\Entities\Post;
 use Workbench\App\Entities\User;
@@ -23,14 +21,15 @@ covers(DoctrineFactory::class);
  */
 describe('HasMany Relationships', function () {
     test("create with children", function () {
+        /** @var User $user */
         $user = User::factory()
             ->has(Post::factory()->count(3))
             ->create();
 
-        expect($user->getPosts())
-            ->toHaveCount(3)
-            ->toBeInstanceOf(Collection::class);
+        expect($user->getPosts())->toHaveCount(3);
 
-        EntityManager::refresh($user);
+        $user->getPosts()->map(function ($post) use ($user) {
+            expect($post)->getUser()->toBe($user);
+        });
     });
-})->todo(issue: 3);
+})->done(issue: 3);

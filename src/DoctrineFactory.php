@@ -146,9 +146,24 @@ abstract class DoctrineFactory extends Factory
     {
         $results->each(function ($model) {
             EntityManager::persist($model);
+
+            $this->createChildren($model);
         });
 
         EntityManager::flush();
+    }
+
+    /**
+     * Create the children for the given model.
+     *
+     * @param  $model
+     * @return void
+     */
+    protected function createChildren($model)
+    {
+        $this->has->each(function ($has) use ($model) {
+            $has->recycle($this->recycle)->createFor($model);
+        });
     }
 
     /**
@@ -170,6 +185,24 @@ abstract class DoctrineFactory extends Factory
             $factory instanceof Factory ? $factory->modelName() : $factory
         ))
         )])]);
+    }
+
+    /**
+     * Define a child relationship for the model.
+     *
+     * @param DoctrineFactory $factory
+     * @param string|null $relationship
+     * @return static
+     */
+    public function has($factory, $relationship = null): static
+    {
+        $guessRelationship = Str::plural($this->guessRelationship($factory->modelName()));
+        $doctrineRelationship = new DoctrineRelationship(
+            $factory, $relationship ?? $guessRelationship
+        );
+        return $this->newInstance([
+            'has' => $this->has->concat([$doctrineRelationship]),
+        ]);
     }
 
     /**
