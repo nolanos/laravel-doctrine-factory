@@ -26,6 +26,7 @@ class User
     protected bool $admin = false;
 
     protected Collection $posts;
+    protected Collection $secondaryPosts;
 
     /**
      * @param $id
@@ -34,6 +35,7 @@ class User
     {
         $this->name = $name;
         $this->posts = new ArrayCollection();
+        $this->secondaryPosts = new ArrayCollection();
     }
 
     public function getId(): int
@@ -59,5 +61,10 @@ class User
     public function getPosts(): Collection
     {
         return $this->posts;
+    }
+
+    public function getSecondaryPosts(): Collection
+    {
+        return $this->secondaryPosts;
     }
 }

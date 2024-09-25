@@ -27,7 +27,7 @@ class Post
     #[ManyToOne(targetEntity: User::class, inversedBy: 'posts')]
     protected ?User $user = null;
 
-    #[ManyToOne(targetEntity: User::class)]
+    #[ManyToOne(targetEntity: User::class, inversedBy: 'secondaryPosts')]
     protected ?User $secondaryAuthor = null;
 
     public function getId(): int
