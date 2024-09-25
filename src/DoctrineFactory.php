@@ -227,6 +227,16 @@ abstract class DoctrineFactory extends Factory
             return $this->for($factory->state($parameters[0] ?? []), $relationship);
         }
 
+        if (Str::startsWith($method, 'has')) {
+            $relationship = Str::camel(Str::after($method, 'has'));
+
+            $factoryName = static::$namespace . 'Entities\\' . Str::singular(Str::studly($relationship)) . 'Factory';
+
+            $factory = new $factoryName;
+
+            return $this->has($factory->count($parameters[0]), $relationship);
+        }
+
         return parent::__call($method, $parameters);
     }
 }

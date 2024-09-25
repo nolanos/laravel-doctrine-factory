@@ -59,4 +59,17 @@ describe('HasMany Relationships', function () {
             expect($post)->getUser()->toBe($user);
         });
     });
+
+    test("magic methods", function () {
+        /** @var User $user */
+        $user = User::factory()
+            ->hasPosts(5)
+            ->create();
+
+        expect($user->getPosts())->toHaveCount(5);
+
+        $user->getPosts()->map(function ($post) use ($user) {
+            expect($post)->getUser()->toBe($user);
+        });
+    });
 })->done(issue: 3);
