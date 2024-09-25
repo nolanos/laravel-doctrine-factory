@@ -208,8 +208,8 @@ abstract class DoctrineFactory extends Factory
     /**
      * Proxy dynamic factory methods onto their proper methods.
      *
-     * @override To handle the `for` method for Doctrine entities. Assumes that the factory
-     * is nested within the Entities namespace.
+     * @override The original relies on specific Eloquent model information
+     * that we do not have on Doctrine Entities.
      *
      * @param string $method
      * @param array $parameters
@@ -217,23 +217,21 @@ abstract class DoctrineFactory extends Factory
      */
     public function __call($method, $parameters)
     {
+        if (!Str::startsWith($method, ['for', 'has'])) {
+            return parent::__call($method, $parameters);
+        }
+
+        $relationship = Str::camel(Str::substr($method, 3));
+
+        // TODO: This will not support nested Entities
+        $factoryName = static::$namespace . 'Entities\\' . Str::singular(Str::studly($relationship)) . 'Factory';
+        $factory = new $factoryName;
+
         if (Str::startsWith($method, 'for')) {
-            $relationship = Str::camel(Str::after($method, 'for'));
-
-            $factoryName = static::$namespace . 'Entities\\' . Str::studly($relationship) . 'Factory';
-
-            $factory = new $factoryName;
-
             return $this->for($factory->state($parameters[0] ?? []), $relationship);
         }
 
         if (Str::startsWith($method, 'has')) {
-            $relationship = Str::camel(Str::after($method, 'has'));
-
-            $factoryName = static::$namespace . 'Entities\\' . Str::singular(Str::studly($relationship)) . 'Factory';
-
-            $factory = new $factoryName;
-
             return $this->has(
                 $factory
                     ->count(is_numeric($parameters[0] ?? null) ? $parameters[0] : 1)
@@ -241,7 +239,5 @@ abstract class DoctrineFactory extends Factory
                 $relationship
             );
         }
-
-        return parent::__call($method, $parameters);
     }
 }
