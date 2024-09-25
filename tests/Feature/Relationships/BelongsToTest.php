@@ -48,14 +48,25 @@ describe('BelongsTo Relationships', function () {
             ->and($post->getSecondaryAuthor())->toEqual($secondaryAuthor);
     });
 
-    test("magic methods can infer the relationship", function () {
-        $post = Post::factory()
-            ->forUser()
-            ->make();
+    describe("magic methods can infer the relationship", function () {
+        test("calling without arguments", function () {
+            $post = Post::factory()
+                ->forUser()
+                ->make();
 
-        expect($post->getUser())->toBeInstanceOf(User::class);
+            expect($post->getUser())->toBeInstanceOf(User::class);
+        });
+
+        test("calling with array attributes", function () {
+            $name = "Donkey Kong";
+
+            $post = Post::factory()->forUser(["name" => $name])->make();
+
+            expect($post->getUser())->getName()->toEqual($name);
+        });
     })->note('https://laravel.com/docs/11.x/eloquent-factories#belongs-to-relationships-using-magic-methods')
         ->done(issue: 5);
+
 
 })->note(note: 'https://laravel.com/docs/11.x/eloquent-factories#belongs-to-relationships')
     ->covers(DoctrineFactory::class, DoctrineBelongsToRelationship::class)
