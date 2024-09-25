@@ -1,6 +1,6 @@
 # Laravel Doctrine Factory
 
-Make and create Doctrine entities in your Laravel tests.
+Use [Eloquent Factories](https://laravel.com/docs/11.x/eloquent-factories) with your Doctrine Entities.
 
 ## Installation
 
