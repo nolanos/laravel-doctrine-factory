@@ -234,7 +234,12 @@ abstract class DoctrineFactory extends Factory
 
             $factory = new $factoryName;
 
-            return $this->has($factory->count($parameters[0]), $relationship);
+            return $this->has(
+                $factory
+                    ->count(is_numeric($parameters[0] ?? null) ? $parameters[0] : 1)
+                    ->state((is_callable($parameters[0] ?? null) || is_array($parameters[0] ?? null)) ? $parameters[0] : ($parameters[1] ?? [])),
+                $relationship
+            );
         }
 
         return parent::__call($method, $parameters);

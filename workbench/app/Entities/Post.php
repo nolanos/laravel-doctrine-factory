@@ -35,6 +35,10 @@ class Post
         return $this->id;
     }
 
+    public function getTitle() {
+        return $this->title;
+    }
+
     public function getUser(): ?User {
         return $this->user;
     }

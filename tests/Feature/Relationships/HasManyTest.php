@@ -72,4 +72,20 @@ describe('HasMany Relationships', function () {
             expect($post)->getUser()->toBe($user);
         });
     });
+
+    test("magic methods with attributes", function () {
+        $title = 'The Count of Monte Cristo';
+        /** @var User $user */
+        $user = User::factory()
+            ->hasPosts(1, [
+                'title' => $title,
+            ])
+            ->create();
+
+        expect($user->getPosts())->toHaveCount(1);
+
+        $user->getPosts()->map(function ($post) use ($title, $user) {
+            expect($post)->getTitle()->toBe($title);
+        });
+    });
 })->done(issue: 3);
