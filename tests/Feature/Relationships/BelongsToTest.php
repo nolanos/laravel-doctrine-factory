@@ -3,6 +3,7 @@
 
 namespace Tests\Feature\Relationships;
 
+use LaravelDoctrine\ORM\Facades\EntityManager;
 use Nolanos\LaravelDoctrineFactory\DoctrineBelongsToRelationship;
 use Nolanos\LaravelDoctrineFactory\DoctrineFactory;
 use Workbench\App\Entities\Post;
@@ -10,7 +11,7 @@ use Workbench\App\Entities\User;
 
 describe('BelongsTo Relationships', function () {
     test("the parent can be an instance", function () {
-        $user = User::factory()->create();
+        $user = User::factory()->make();
 
         $post = Post::factory()
             ->for($user)
@@ -67,7 +68,17 @@ describe('BelongsTo Relationships', function () {
     })->note('https://laravel.com/docs/11.x/eloquent-factories#belongs-to-relationships-using-magic-methods')
         ->done(issue: 5);
 
+    it("creates all records", function () {
+        $post = Post::factory()
+            ->for(User::factory())
+            ->create();
 
+        EntityManager::refresh($post);
+        EntityManager::refresh($post->getUser());
+
+        expect(EntityManager::find(Post::class, $post->getId()))->not->toBeNull();
+        expect(EntityManager::find(User::class, $post->getUser()->getId()))->not->toBeNull();
+    });
 })->note(note: 'https://laravel.com/docs/11.x/eloquent-factories#belongs-to-relationships')
     ->covers(DoctrineFactory::class, DoctrineBelongsToRelationship::class)
     ->done(issue: 10);
