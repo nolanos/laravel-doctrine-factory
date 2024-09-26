@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Illuminate\Support\Collection;
 use LaravelDoctrine\ORM\Facades\EntityManager;
 use Nolanos\LaravelDoctrineFactory\DoctrineFactory;
+use Nolanos\LaravelDoctrineFactory\MissingConstructorAttributesException;
 use Workbench\App\Entities\User;
 
 /**
@@ -171,4 +172,46 @@ describe('Instantiating Entities', function () {
         expect(NullNameFactory::new()->make())
             ->getName()->toBeNull();
     });
+
+    test("throws MissingConstructorAttributeException if not given attribute for required constructor params", function () {
+        class MissingName
+        {
+            public function __construct(public string $name)
+            {
+            }
+        }
+
+        class MissingNameFactory extends DoctrineFactory
+        {
+            protected $model = MissingName::class;
+
+            public function definition(): array
+            {
+                return [];
+            }
+        }
+
+        MissingNameFactory::new()->make();
+    })->throws(MissingConstructorAttributesException::class);
+
+    test("does not throw MissingConstructorAttributeException if not given attribute for optional constructor params", function () {
+        class OptionalName
+        {
+            public function __construct(public string $name = "Gregory")
+            {
+            }
+        }
+
+        class OptionalNameFactory extends DoctrineFactory
+        {
+            protected $model = OptionalName::class;
+
+            public function definition(): array
+            {
+                return [];
+            }
+        }
+
+        OptionalNameFactory::new()->make();
+    })->throwsNoExceptions();
 });

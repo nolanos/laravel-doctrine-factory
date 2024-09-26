@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use LaravelDoctrine\ORM\Facades\EntityManager;
 use ReflectionClass;
+use ReflectionException;
 
 
 /**
@@ -101,7 +102,8 @@ abstract class DoctrineFactory extends Factory
      * then set the properties directly–even if they are private.
      *
      * @param array<string, mixed> $attributes
-     * @return TModel
+     * @return TModel|Collection<TModel>
+     * @throws MissingConstructorAttributesException|ReflectionException
      */
     public function newModel(array $attributes = [])
     {
@@ -111,10 +113,14 @@ abstract class DoctrineFactory extends Factory
         $constructorArgs = [];
 
         if ($constructor = $reflectionClass->getConstructor()) {
-            foreach ($constructor->getParameters() as $param) {
+            $params = $constructor->getParameters();
+
+            foreach ($params as $param) {
                 if (array_key_exists($param->getName(), $attributes)) {
                     $constructorArgs[$param->getName()] = $attributes[$param->getName()];
                     unset($attributes[$param->getName()]);
+                } else if (!$param->isOptional()) {
+                    throw new MissingConstructorAttributesException($this, $param);
                 }
             }
         }
