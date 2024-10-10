@@ -4,7 +4,6 @@ namespace Nolanos\LaravelDoctrineFactory;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use LaravelDoctrine\ORM\Facades\EntityManager;
@@ -137,6 +136,24 @@ abstract class DoctrineFactory extends Factory
         }
 
         return $instance;
+    }
+
+    /**
+     * Create the parent relationship resolvers (as deferred Closures).
+     *
+     * @override Instead of instantiating a child model to create the parent, simply
+     * pass the class name. This is enough for DoctrineBelongsToRelationship to create
+     * the parent.
+     *
+     * @return array
+     */
+    protected function parentResolvers()
+    {
+        $model = $this->modelName();
+
+        return $this->for->map(function (DoctrineBelongsToRelationship $for) use ($model) {
+            return $for->recycle($this->recycle)->attributesFor($model);
+        })->collapse()->all();
     }
 
     /**

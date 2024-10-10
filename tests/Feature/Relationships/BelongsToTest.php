@@ -6,6 +6,7 @@ namespace Tests\Feature\Relationships;
 use LaravelDoctrine\ORM\Facades\EntityManager;
 use Nolanos\LaravelDoctrineFactory\DoctrineBelongsToRelationship;
 use Nolanos\LaravelDoctrineFactory\DoctrineFactory;
+use Workbench\App\Entities\Comment;
 use Workbench\App\Entities\Post;
 use Workbench\App\Entities\User;
 
@@ -78,6 +79,32 @@ describe('BelongsTo Relationships', function () {
 
         expect(EntityManager::find(Post::class, $post->getId()))->not->toBeNull();
         expect(EntityManager::find(User::class, $post->getUser()->getId()))->not->toBeNull();
+    });
+
+    it("entities created by BelongsTo relationship should get passed to constructor", function () {
+        $comment = Comment::factory()
+            // The Comment constructor requires a Post instance.
+            ->for(Post::factory()->forUser())
+            ->create([
+                "body" => "Blah",
+                "user" => User::factory()->create(),
+            ]);
+
+        expect($comment)->getBody()->toBe("Blah");
+        expect($comment)->getPost()->toBeInstanceOf(Post::class);
+    });
+
+    it("entities made by BelongsTo relationship should get passed to constructor", function () {
+        $comment = Comment::factory()
+            // The Comment constructor requires a Post instance.
+            ->for(Post::factory()->forUser())
+            ->forUser()
+            ->make([
+                "body" => "Blah",
+            ]);
+
+        expect($comment)->getBody()->toBe("Blah");
+        expect($comment)->getPost()->toBeInstanceOf(Post::class);
     });
 })->note(note: 'https://laravel.com/docs/11.x/eloquent-factories#belongs-to-relationships')
     ->covers(DoctrineFactory::class, DoctrineBelongsToRelationship::class)
