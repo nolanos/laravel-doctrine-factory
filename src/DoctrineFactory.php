@@ -168,16 +168,12 @@ abstract class DoctrineFactory extends Factory
     protected function store(Collection $results)
     {
         $results->each(function ($model) {
-            // First, persist any related entities that were passed as attributes
+            // Blindly attempt to persist everything. Will ignore invalid attempts.
             $reflection = new ReflectionClass($model);
             foreach ($reflection->getProperties() as $property) {
                 $property->setAccessible(true);
                 $value = $property->getValue($model);
-
-                // Check if the value is an object and is a Doctrine entity
-                if ($this->isDoctrineEntity($value)) {
-                    EntityManager::persist($value);
-                }
+                $this->blindlyAttemptToPersist($value);
             }
 
             EntityManager::persist($model);
@@ -283,16 +279,11 @@ abstract class DoctrineFactory extends Factory
      * @param mixed $object 
      * @return bool 
      */
-    private function isDoctrineEntity($object): bool
+    private function blindlyAttemptToPersist($object)
     {
         try {
-            if (!is_object($object)) {
-                return false;
-            }
-
-            return EntityManager::getMetadataFactory()->hasMetadataFor(get_class($object));
+            EntityManager::persist($object);
         } catch (\Exception $e) {
-            return false;
         }
     }
 }
