@@ -286,4 +286,40 @@ abstract class DoctrineFactory extends Factory
         } catch (\Exception $e) {
         }
     }
+
+    /**
+     * 
+     * @overrides The original implementation to return the whole object instead of it's key.
+     * 
+     * @param array $definition 
+     * @return array 
+     */
+    protected function expandAttributes(array $definition)
+    {
+        return collect($definition)
+            ->map($evaluateRelations = function ($attribute) {
+                /**
+                 * @modified Removed `getKey` calls on recycled models.
+                 */
+                if ($attribute instanceof self) {
+                    return $this->getRandomRecycledModel($attribute->modelName())
+                        ?? $attribute->recycle($this->recycle)->create();
+                }
+
+                /**
+                 * @modified Removed path: `elseif ($attribute instanceof Model)` 
+                 */
+
+                return $attribute;
+            })
+            ->map(function ($attribute, $key) use (&$definition, $evaluateRelations) {
+                if (is_callable($attribute) && ! is_string($attribute) && ! is_array($attribute)) {
+                    $attribute = $attribute($definition);
+                }
+                $attribute = $evaluateRelations($attribute);
+                $definition[$key] = $attribute;
+                return $attribute;
+            })
+            ->all();
+    }
 }

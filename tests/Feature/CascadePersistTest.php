@@ -23,12 +23,14 @@ test('it throws exception when persisting entity with unpersisted relationships'
 });
 
 test('it does not throw exception when creating factories', function () {
-    // Currently works
+    // Works
     Post::factory()->forUser()->create();
 
-
-    // TODO: Currently doesn't work
+    // Works
     Post::factory()->create([
         'user' => User::factory()->make(),
     ]);
+
+    // Doesn't work
+    Post::factory()->create([]);
 });
