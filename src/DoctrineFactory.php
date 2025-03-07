@@ -217,8 +217,8 @@ abstract class DoctrineFactory extends Factory
         return $this->newInstance(['for' => $this->for->concat([new DoctrineBelongsToRelationship(
             $factory,
             $relationship ?? Str::camel(class_basename(
-            $factory instanceof Factory ? $factory->modelName() : $factory
-        ))
+                $factory instanceof Factory ? $factory->modelName() : $factory
+            ))
         )])]);
     }
 
@@ -315,7 +315,7 @@ abstract class DoctrineFactory extends Factory
                  */
                 if ($attribute instanceof self) {
                     return $this->getRandomRecycledModel($attribute->modelName())
-                        ?? $attribute->recycle($this->recycle)->create();
+                        ?? $attribute->recycle($this->recycle)->make();
                 }
 
                 /**
@@ -329,7 +329,7 @@ abstract class DoctrineFactory extends Factory
                     $newCollection = new ArrayCollection;
                     foreach ($attribute as $entityOrFactory) {
                         if ($entityOrFactory instanceof self) {
-                            $entity = $this->getRandomRecycledModel($entityOrFactory->modelName()) ?? $entityOrFactory->recycle($this->recycle)->create();
+                            $entity = $this->getRandomRecycledModel($entityOrFactory->modelName()) ?? $entityOrFactory->recycle($this->recycle)->make();
 
                             $newCollection->add($entity);
                         } else {
