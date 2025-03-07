@@ -168,6 +168,18 @@ abstract class DoctrineFactory extends Factory
     protected function store(Collection $results)
     {
         $results->each(function ($model) {
+            // First, persist any related entities that were passed as attributes
+            $reflection = new ReflectionClass($model);
+            foreach ($reflection->getProperties() as $property) {
+                $property->setAccessible(true);
+                $value = $property->getValue($model);
+
+                // Check if the value is an object and is a Doctrine entity
+                if ($this->isDoctrineEntity($value)) {
+                    EntityManager::persist($value);
+                }
+            }
+
             EntityManager::persist($model);
 
             $this->createChildren($model);
@@ -205,8 +217,8 @@ abstract class DoctrineFactory extends Factory
         return $this->newInstance(['for' => $this->for->concat([new DoctrineBelongsToRelationship(
             $factory,
             $relationship ?? Str::camel(class_basename(
-            $factory instanceof Factory ? $factory->modelName() : $factory
-        ))
+                $factory instanceof Factory ? $factory->modelName() : $factory
+            ))
         )])]);
     }
 
@@ -221,7 +233,8 @@ abstract class DoctrineFactory extends Factory
     {
         $guessRelationship = Str::plural($this->guessRelationship($factory->modelName()));
         $doctrineRelationship = new DoctrineRelationship(
-            $factory, $relationship ?? $guessRelationship
+            $factory,
+            $relationship ?? $guessRelationship
         );
         return $this->newInstance([
             'has' => $this->has->concat([$doctrineRelationship]),
@@ -261,6 +274,25 @@ abstract class DoctrineFactory extends Factory
                     ->state((is_callable($parameters[0] ?? null) || is_array($parameters[0] ?? null)) ? $parameters[0] : ($parameters[1] ?? [])),
                 $relationship
             );
+        }
+    }
+
+    /**
+     * Returns true if the given object is a Doctrine Entity.
+     * 
+     * @param mixed $object 
+     * @return bool 
+     */
+    private function isDoctrineEntity($object): bool
+    {
+        try {
+            if (!is_object($object)) {
+                return false;
+            }
+
+            return EntityManager::getMetadataFactory()->hasMetadataFor(get_class($object));
+        } catch (\Exception $e) {
+            return false;
         }
     }
 }
