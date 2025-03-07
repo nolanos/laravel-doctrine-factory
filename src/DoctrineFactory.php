@@ -2,6 +2,7 @@
 
 namespace Nolanos\LaravelDoctrineFactory;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
@@ -216,8 +217,8 @@ abstract class DoctrineFactory extends Factory
         return $this->newInstance(['for' => $this->for->concat([new DoctrineBelongsToRelationship(
             $factory,
             $relationship ?? Str::camel(class_basename(
-                $factory instanceof Factory ? $factory->modelName() : $factory
-            ))
+            $factory instanceof Factory ? $factory->modelName() : $factory
+        ))
         )])]);
     }
 
@@ -278,9 +279,9 @@ abstract class DoctrineFactory extends Factory
 
     /**
      * Returns true if the given object is a Doctrine Entity.
-     * 
-     * @param mixed $object 
-     * @return bool 
+     *
+     * @param mixed $object
+     * @return bool
      */
     private function blindlyAttemptToPersist($object)
     {
@@ -299,11 +300,11 @@ abstract class DoctrineFactory extends Factory
     }
 
     /**
-     * 
+     *
      * @overrides The original implementation to return the whole object instead of it's key.
-     * 
-     * @param array $definition 
-     * @return array 
+     *
+     * @param array $definition
+     * @return array
      */
     protected function expandAttributes(array $definition)
     {
@@ -318,13 +319,30 @@ abstract class DoctrineFactory extends Factory
                 }
 
                 /**
-                 * @modified Removed path: `elseif ($attribute instanceof Model)` 
+                 * @modified Removed path: `elseif ($attribute instanceof Model)`
                  */
+
+                /**
+                 * @modified Resolve factories inside the collections.
+                 */
+                if ($attribute instanceof DoctrineCollection) {
+                    $newCollection = new ArrayCollection;
+                    foreach ($attribute as $entityOrFactory) {
+                        if ($entityOrFactory instanceof self) {
+                            $entity = $this->getRandomRecycledModel($entityOrFactory->modelName()) ?? $entityOrFactory->recycle($this->recycle)->create();
+
+                            $newCollection->add($entity);
+                        } else {
+                            $newCollection->add($entityOrFactory);
+                        }
+                    }
+                    return $newCollection;
+                }
 
                 return $attribute;
             })
             ->map(function ($attribute, $key) use (&$definition, $evaluateRelations) {
-                if (is_callable($attribute) && ! is_string($attribute) && ! is_array($attribute)) {
+                if (is_callable($attribute) && !is_string($attribute) && !is_array($attribute)) {
                     $attribute = $attribute($definition);
                 }
                 $attribute = $evaluateRelations($attribute);

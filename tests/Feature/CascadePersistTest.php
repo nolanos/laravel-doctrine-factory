@@ -55,10 +55,17 @@ describe('HasMany relationships', function () {
         );
     });
 
-    test('it does not throw exception when creating factories', function () {
+    test('it does not throw exception when creating with instances', function () {
         // Works
         User::factory()->create([
             'children' => new ArrayCollection([User::factory()->make()]),
+        ]);
+    });
+
+    test('it does not throw exception when creating with factories', function () {
+        // Works
+        User::factory()->create([
+            'children' => new ArrayCollection([User::factory()]),
         ]);
     });
 });
