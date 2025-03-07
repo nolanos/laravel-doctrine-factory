@@ -172,8 +172,10 @@ abstract class DoctrineFactory extends Factory
             $reflection = new ReflectionClass($model);
             foreach ($reflection->getProperties() as $property) {
                 $property->setAccessible(true);
-                $value = $property->getValue($model);
-                $this->blindlyAttemptToPersist($value);
+                if ($property->isInitialized($model)) {
+                    $value = $property->getValue($model) ?? null;
+                    $this->blindlyAttemptToPersist($value);
+                }
             }
 
             EntityManager::persist($model);

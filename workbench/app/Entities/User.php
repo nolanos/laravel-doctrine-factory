@@ -25,6 +25,8 @@ class User
     #[Column(type: 'boolean')]
     protected bool $admin = false;
 
+    protected bool $uninitializedFlag;
+
     protected Collection $posts;
     protected Collection $secondaryPosts;
 
