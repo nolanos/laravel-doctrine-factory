@@ -8,6 +8,8 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -27,8 +29,17 @@ class User
 
     protected bool $uninitializedFlag;
 
+    #[ManyToOne(targetEntity: User::class, inversedBy: 'children')]
+    protected ?User $parent = null;
+
+    #[OneToMany(targetEntity: Post::class, mappedBy: 'user')]
     protected Collection $posts;
+
+    #[OneToMany(targetEntity: Post::class, mappedBy: 'secondaryAuthor')]
     protected Collection $secondaryPosts;
+
+    #[OneToMany(targetEntity: User::class, mappedBy: 'parent', cascade: [])]
+    protected Collection $children;
 
     /**
      * @param $id
@@ -38,6 +49,7 @@ class User
         $this->name = $name;
         $this->posts = new ArrayCollection();
         $this->secondaryPosts = new ArrayCollection();
+        $this->children = new ArrayCollection();
     }
 
     public function getId(): int

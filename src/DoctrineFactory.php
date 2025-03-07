@@ -2,6 +2,7 @@
 
 namespace Nolanos\LaravelDoctrineFactory;
 
+use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -284,7 +285,15 @@ abstract class DoctrineFactory extends Factory
     private function blindlyAttemptToPersist($object)
     {
         try {
-            EntityManager::persist($object);
+            if ($object instanceof DoctrineCollection) {
+                $objects = $object;
+            } else {
+                $objects = [$object];
+            }
+
+            foreach ($objects as $obj) {
+                EntityManager::persist($obj);
+            }
         } catch (\Exception $e) {
         }
     }
