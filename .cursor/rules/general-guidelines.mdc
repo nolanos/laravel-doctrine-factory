@@ -1,8 +1,0 @@
----
-description: 
-globs: 
-alwaysApply: false
----
-The goal of this PHP package is to provide a wrapper around Laravel's Factory system that works with laravel-docrtrine.
-
-- Always use `pest` to write tests.
