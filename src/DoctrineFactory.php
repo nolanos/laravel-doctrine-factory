@@ -71,6 +71,7 @@ abstract class DoctrineFactory extends Factory
 
         if ($this->count === null) {
             return tap($this->makeInstance($parent), function ($instance) {
+                $this->blindlyAttemptToPersist($instance);
                 $this->callAfterMaking(collect([$instance]));
             });
         }
@@ -86,7 +87,7 @@ abstract class DoctrineFactory extends Factory
          * @modified Directly calls `collect` instead of doing $this->newModel()->newCollection()
          */
         $instances = collect(array_map(function () use ($parent) {
-            return $this->makeInstance($parent);
+            return $this->blindlyAttemptToPersist($this->makeInstance($parent));
         }, range(1, $this->count)));
 
         $this->callAfterMaking($instances);
@@ -175,12 +176,9 @@ abstract class DoctrineFactory extends Factory
             foreach ($reflection->getProperties() as $property) {
                 $property->setAccessible(true);
                 if ($property->isInitialized($model)) {
-                    $value = $property->getValue($model) ?? null;
-                    $this->blindlyAttemptToPersist($value);
+                    $property->getValue($model) ?? null;
                 }
             }
-
-            EntityManager::persist($model);
 
             $this->createChildren($model);
         });
@@ -297,6 +295,7 @@ abstract class DoctrineFactory extends Factory
             }
         } catch (\Exception $e) {
         }
+        return $object;
     }
 
     /**

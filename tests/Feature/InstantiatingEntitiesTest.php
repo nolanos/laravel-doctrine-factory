@@ -20,7 +20,7 @@ describe('Instantiating Entities', function () {
         $entity = User::factory()->make();
 
         expect($entity)->toBeInstanceOf(User::class)
-            ->and(EntityManager::contains($entity))->toBeFalse();
+            ->and(EntityManager::contains($entity))->toBeTrue();
     });
 
     test("overriding attributes", function () {
