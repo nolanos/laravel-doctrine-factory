@@ -19,21 +19,24 @@ describe('DoctrineManyToManyRelationship', function () {
         $factory = $this->createMock(DoctrineFactory::class);
         $relationship = new DoctrineManyToManyRelationship($factory, 'tags');
         
-        // Create a mock entity to test the guess method
+        // Create a realistic mock entity with a proper class name
         $mockEntity = new class {
             public function __construct()
             {
-                // Mock entity
+                // Mock Post entity
             }
         };
+        
+        // Set the class name to something more realistic for testing
+        $realPost = new \Workbench\App\Entities\Post();
         
         $reflectionClass = new \ReflectionClass($relationship);
         $method = $reflectionClass->getMethod('guessInversePropertyName');
         $method->setAccessible(true);
         
-        $result = $method->invoke($relationship, $mockEntity);
+        $result = $method->invoke($relationship, $realPost);
         
-        // It should convert the class name to a plural camel case property name
-        expect($result)->toContain('class');
+        // Should convert "Post" to "posts"
+        expect($result)->toBe('posts');
     });
 });

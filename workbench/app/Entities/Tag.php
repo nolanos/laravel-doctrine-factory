@@ -56,7 +56,6 @@ class Tag
     {
         if (!$this->posts->contains($post)) {
             $this->posts->add($post);
-            $post->addTag($this);
         }
     }
 
@@ -64,7 +63,6 @@ class Tag
     {
         if ($this->posts->contains($post)) {
             $this->posts->removeElement($post);
-            $post->removeTag($this);
         }
     }
 }

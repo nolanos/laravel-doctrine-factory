@@ -87,6 +87,7 @@ class Post
     {
         if (!$this->tags->contains($tag)) {
             $this->tags->add($tag);
+            $tag->addPost($this);
         }
     }
 
@@ -94,6 +95,7 @@ class Post
     {
         if ($this->tags->contains($tag)) {
             $this->tags->removeElement($tag);
+            $tag->removePost($this);
         }
     }
 }
