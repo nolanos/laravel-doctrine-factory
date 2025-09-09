@@ -4,9 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-This is a Laravel package that provides Doctrine Factory support for Laravel. It is intended to be a drop-in replacement
-for Eloquent factories that works with Doctrine entities. The package extends Laravel's
-`Illuminate\Database\Eloquent\Factories\Factory` to work with Doctrine ORM instead of Eloquent models.
+This is a Laravel package that provides Doctrine Factory support for Laravel. It allows you to use Laravel's Eloquent Factories with Doctrine entities as a drop-in replacement. The package extends Laravel's `Illuminate\Database\Eloquent\Factories\Factory` to work with Doctrine ORM instead of Eloquent models.
 
 ## Essential Commands
 
@@ -15,6 +13,8 @@ for Eloquent factories that works with Doctrine entities. The package extends La
 ```bash
 composer test              # Run all tests using Pest
 vendor/bin/pest           # Direct Pest command
+vendor/bin/pest tests/Feature/PersistingEntitiesTest.php  # Run specific test file
+vendor/bin/pest --filter "test_name"  # Run specific test by name
 ```
 
 ### Linting & Static Analysis
