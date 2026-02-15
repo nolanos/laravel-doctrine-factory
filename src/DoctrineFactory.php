@@ -240,6 +240,25 @@ abstract class DoctrineFactory extends Factory
     }
 
     /**
+     * Define a many-to-many relationship for the model.
+     *
+     * @param DoctrineFactory $factory
+     * @param string|null $relationship
+     * @return static
+     */
+    public function attachedTo($factory, $relationship = null): static
+    {
+        $guessRelationship = Str::plural($this->guessRelationship($factory->modelName()));
+        $manyToManyRelationship = new DoctrineManyToManyRelationship(
+            $factory,
+            $relationship ?? $guessRelationship
+        );
+        return $this->newInstance([
+            'has' => $this->has->concat([$manyToManyRelationship]),
+        ]);
+    }
+
+    /**
      * Proxy dynamic factory methods onto their proper methods.
      *
      * @override The original relies on specific Eloquent model information
@@ -251,8 +270,23 @@ abstract class DoctrineFactory extends Factory
      */
     public function __call($method, $parameters)
     {
-        if (!Str::startsWith($method, ['for', 'has'])) {
+        if (!Str::startsWith($method, ['for', 'has', 'attachedTo'])) {
             return parent::__call($method, $parameters);
+        }
+
+        if (Str::startsWith($method, 'attachedTo')) {
+            $relationship = Str::camel(Str::substr($method, 10));
+            
+            // TODO: This will not support nested Entities
+            $factoryName = static::$namespace . 'Entities\\' . Str::singular(Str::studly($relationship)) . 'Factory';
+            $factory = new $factoryName;
+            
+            return $this->attachedTo(
+                $factory
+                    ->count(is_numeric($parameters[0] ?? null) ? $parameters[0] : 1)
+                    ->state((is_callable($parameters[0] ?? null) || is_array($parameters[0] ?? null)) ? $parameters[0] : ($parameters[1] ?? [])),
+                $relationship
+            );
         }
 
         $relationship = Str::camel(Str::substr($method, 3));
